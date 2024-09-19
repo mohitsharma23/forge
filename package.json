@@ -1,0 +1,18 @@
+{
+  "name": "forge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Mohit Sharma",
+  "license": "ISC",
+  "description": "A forge to create fast products",
+  "bin": {
+    "forge": "./index.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  }
+}
