@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const { program } = require("commander");
+const { exec, execSync } = require("child_process");
 
 program.version("1.0.0").description("Forge - A CLI scaffold tool");
 
@@ -14,7 +15,13 @@ program.parse(process.argv);
 const options = program.opts();
 
 if (options.init) {
-  // Add package.json required files here
+  const packageFilePath = path.join(process.cwd(), "package.json");
+
+  if (!fs.existsSync(packageFilePath)) {
+    execSync("npm init -y");
+  }
+
+  exec("npm i mongodb mongoose dotenv");
 }
 
 if (options.database === "mongo") {
