@@ -1,9 +1,13 @@
 #! /usr/bin/env node
 
-const fs = require("fs");
 const path = require("path");
 const { program } = require("commander");
-const { exec, execSync } = require("child_process");
+const {
+  handlePackages,
+  handleUninstallPackages,
+  handleDatabaseConnectionFile,
+} = require("./utils/utils");
+const { DATABASE } = require("./constants/constants");
 
 program.version("1.0.0").description("Forge - A CLI scaffold tool");
 
@@ -15,28 +19,33 @@ program.parse(process.argv);
 const options = program.opts();
 
 if (options.init) {
-  const packageFilePath = path.join(process.cwd(), "package.json");
-
-  if (!fs.existsSync(packageFilePath)) {
-    execSync("npm init -y");
-  }
-
-  exec("npm i mongodb mongoose dotenv");
+  handlePackages("dotenv");
 }
 
-if (options.database === "mongo") {
+if (options.database) {
   const folderPath = path.join(process.cwd(), "config");
-  const sourcePath = path.join(__dirname, "items/mongo-database.js");
-
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath);
-  }
-
   const filePath = `${folderPath}/connect.js`;
 
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "");
-  }
+  switch (options.database) {
+    case DATABASE.MONGO:
+      handleUninstallPackages("pg");
+      handlePackages("mongodb mongoose");
+      const mongoSourcePath = path.join(__dirname, "items/mongo-database.js");
+      handleDatabaseConnectionFile(folderPath, filePath, mongoSourcePath);
+      break;
 
-  fs.copyFileSync(sourcePath, filePath);
+    case DATABASE.POSTGRES:
+      handleUninstallPackages("mongodb mongoose");
+      handlePackages("pg");
+      const postgresSourcePath = path.join(
+        __dirname,
+        "items/postgres-database.js"
+      );
+      handleDatabaseConnectionFile(folderPath, filePath, postgresSourcePath);
+      break;
+
+    default:
+      console.log("Please enter valid database name");
+      break;
+  }
 }
