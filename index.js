@@ -19,7 +19,7 @@ program.parse(process.argv);
 const options = program.opts();
 
 if (options.init) {
-  handlePackages("dotenv");
+  handlePackages("express dotenv body-parser");
 }
 
 if (options.database) {
